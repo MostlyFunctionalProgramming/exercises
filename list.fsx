@@ -28,6 +28,7 @@ module MyList =
       match xs with
       | Empty -> cont acc
       | Elem (v, xs') -> loop f xs' (fun acc -> f v acc |> cont)
+
     loop f xs id
 
   let reverse xs = fold (fun acc v -> v ^> acc) Empty xs
@@ -52,8 +53,8 @@ module MyList =
     foldBack (fun v acc -> f v ^> acc) xs Empty
 
   let toString xs =
-    let s = fold (fun acc v -> acc + (if acc = "" then "" else " ^> ") + string v) "" xs
-    if s = "" then "Empty" else s + " ^> Empty"
+    foldBack (fun v acc -> string v + " ^> " + acc) xs ""
+    + "Empty"
 
 ///use the module
 open MyList
@@ -74,6 +75,8 @@ fold (fun acc v -> v :: acc) [] myList
 foldBack (fun v acc -> v :: acc) myList []
 
 //create a MyList of 1M elements and sum them using both versions of fold
-let myBigList = List.fold (fun acc v -> v ^> acc) Empty [1UL..1_000_000UL]
+let myBigList =
+  List.fold (fun acc v -> v ^> acc) Empty [ 1UL .. 1_000_000UL ]
+
 myBigList |> fun xs -> foldBack (+) xs 0UL
 myBigList |> fold (+) 0UL
