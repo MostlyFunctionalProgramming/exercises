@@ -44,6 +44,18 @@ let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
 
 /// another kind of optimization using a continuation
 /// see also `foldBack` from our `MyList` module
+(*
+  For this example:
+  let xs = 1 :: 2 :: []
+  let ys = 10 :: 20 :: []
+
+  fun acc -> id <| (f 1 10) :: acc // c1
+  fun acc -> c1 <| (f 2 20 :: acc) // c2
+  c2 []                            // base case
+  c1 <| (f 2 20) :: []
+  id <| f 1 10 :: (f 2 20 :: [])
+  (f 1 10) :: (f 2 20) :: []
+*)
 let myContZipWith f xs ys =
   let rec loop xs ys cont =
     match xs, ys with
@@ -52,6 +64,8 @@ let myContZipWith f xs ys =
     | _, _ -> cont []
 
   loop xs ys id
+
+myContZipWith (+) [1;2] [10;20] // from the example comment above
 
 /// this one works
 let byCont = myContZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
