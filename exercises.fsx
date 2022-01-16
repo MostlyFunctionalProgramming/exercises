@@ -52,9 +52,9 @@ let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
   fun acc -> id <| (f 1 10) :: acc // c1
   fun acc -> c1 <| (f 2 20 :: acc) // c2
   c2 []                            // base case
-  c1 <| (f 2 20) :: []
-  id <| f 1 10 :: (f 2 20 :: [])
-  (f 1 10) :: (f 2 20) :: []
+  c1 <| (f 2 20) :: []             // substitute the result of evaluating c2
+  id <| f 1 10 :: (f 2 20 :: [])   // substitute the result of evaluating c1
+  (f 1 10) :: (f 2 20) :: []       // final result
 *)
 let myContZipWith f xs ys =
   let rec loop xs ys cont =
