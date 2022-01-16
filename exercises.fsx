@@ -40,7 +40,23 @@ let myTailRecZipWith f xs ys =
   loop [] xs ys |> List.rev
 
 /// this one works
-myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
+let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
+
+/// another kind of optimization using a continuation
+let myContZipWith f xs ys =
+  let rec loop xs ys cont =
+    match xs, ys with
+    | [], [] -> cont []
+    | x :: xs, y :: ys -> loop xs ys (fun acc -> cont <| (f x y) :: acc)
+    | _, _ -> cont []
+
+  loop xs ys id
+
+/// this one works
+let byCont = myContZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
+
+/// both optimization produce the same result
+byTailRec = byCont //true
 
 /// trying out the standard fold function
 List.fold (+) 0 [ 1 .. 100 ]
