@@ -43,6 +43,7 @@ let myTailRecZipWith f xs ys =
 let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
 
 /// another kind of optimization using a continuation
+/// see also `foldBack` from our `MyList` module
 let myContZipWith f xs ys =
   let rec loop xs ys cont =
     match xs, ys with
