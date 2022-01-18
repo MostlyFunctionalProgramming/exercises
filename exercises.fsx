@@ -49,18 +49,26 @@ let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
   let xs = 1 :: 2 :: []
   let ys = 10 :: 20 :: []
 
-  fun acc -> id <| (f 1 10) :: acc // c1
-  fun acc -> c1 <| (f 2 20 :: acc) // c2
-  c2 []                            // base case
-  c1 <| (f 2 20) :: []             // substitute the result of evaluating c2
-  id <| f 1 10 :: (f 2 20 :: [])   // substitute the result of evaluating c1
-  (f 1 10) :: (f 2 20) :: []       // final result
+  // first step
+  fun acc -> (f 1 10) :: acc
+  |> id  // this is the initial value of `cont`
+
+  // second step
+  fun acc -> (f 2 20 :: acc)
+  |> fun acc -> (f 1 10) :: acc  // this and the next line is the next value of `cont`
+  |> id
+
+  // base case
+  []
+  |> fun acc -> (f 2 20) :: acc  // this and the next two lines is the final value of `cont`
+  |> fun acc -> (f 1 10) :: acc
+  |> id
 *)
 let myContZipWith f xs ys =
   let rec loop xs ys cont =
     match xs, ys with
     | [], [] -> cont []
-    | x :: xs, y :: ys -> loop xs ys (fun acc -> cont <| (f x y) :: acc)
+    | x :: xs, y :: ys -> loop xs ys (fun acc -> (f x y) :: acc |> cont)
     | _, _ -> cont []
 
   loop xs ys id
