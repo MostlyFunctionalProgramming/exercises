@@ -48,20 +48,29 @@ let byTailRec = myTailRecZipWith (+) [ 1 .. 1_000_000 ] [ 1 .. 1_000_000 ]
   For this example:
   let xs = 1 :: 2 :: []
   let ys = 10 :: 20 :: []
+  let f = (+)
 
   // first step
-  fun acc -> (f 1 10) :: acc
+  fun acc -> f 1 10 :: acc
   |> id  // this is the initial value of `cont`
 
+  // which reduces to
+  fun acc -> 11 :: acc |> id
+
   // second step
-  fun acc -> (f 2 20 :: acc)
-  |> fun acc -> (f 1 10) :: acc  // this and the next line is the next value of `cont`
+  fun acc -> f 2 20 :: acc
+  |> fun acc -> 11 :: acc  // this and the next line is the next value of `cont`
+  |> id
+
+  // which reduces to
+  fun acc -> 22 :: acc
+  |> fun acc -> 11 :: acc  // this and the next line is the next value of `cont`
   |> id
 
   // base case
   []
-  |> fun acc -> (f 2 20) :: acc  // this and the next two lines is the final value of `cont`
-  |> fun acc -> (f 1 10) :: acc
+  |> fun acc -> 22 :: acc  // this and the next two lines is the final value of `cont`
+  |> fun acc -> 11 :: acc
   |> id
 *)
 let myContZipWith f xs ys =
